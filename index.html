@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>POSIX Signals</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="https://github.com/downloads/gnab/remark/remark-0.4.2.min.js" type="text/javascript">
+      { "highlightStyle": "sunburst" }
+    </script>
+    <style type="text/css" media="screen">
+      @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+      @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+
+      body {
+        font-family: 'Droid Serif';
+        font-size: 24px;
+        color: #fff;
+      }
+      a {
+        color: #daa420
+      }
+      h1, h2 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: 400;
+        color: #daa420
+      }
+      h1 {
+        font-size: 3em;
+      }
+      h2 {
+        font-size: 2em;
+      }
+      h3 {
+        color: #fff;
+        font-size: 1.5em;
+      }
+      .slide {
+        background: url(http://subtlepatterns.subtlepatterns.netdna-cdn.com/patterns/debut_dark.png);
+      }
+      .content {
+      }
+      
+      #slideshow .slide > .splash {
+        background: url(traffic-lights.jpg) no-repeat center;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+class: splash
+# POSIX Signals
+
+---
+## What are signals?
+
+Signals are a way that processes can communicate requests to each other.
+Signals have been around since the 1970s Bell Labs Unix and are used in all
+POSIX operating systems (Linux, OSX, etc).
+
+When a signal is sent, the OS interrupts the process to deliver the
+signal. If the process has registered its own signal handler, that will run.
+Otherwise, a default signal handler is executed.
+
+---
+## An example
+```
+$ apachectl stop
+
+$ /etc/init.d/apache stop
+
+$ systemctl stop apache.service
+
+$ supervisorctl stop apache
+
+$ kill httpd
+```
+
+All five of these commands do the exact same thing: shut down apache.
+
+Or more accurately, they tell apache to shut <em>itself</em> down.
+
+---
+## SIGTERM
+
+All of these methods of shutting down apache ultimately did the exact same
+thing to the apache httpd process- they sent it a signal: SIGTERM.
+
+SIGTERM, standing for "terminate" is the standard way to tell a process to
+cleanup anything it's currently doing and shut itself down.
+
+Most processes will handle SIGTERM in this way. However, it is ultimately up to
+the process how to react.
+
+```
+$ kill celeryd
+&gt; "HAHA NO I'M GOING TO KEEP RUNNING AND ALSO BREAK EVERYTHING"
+```
+
+---
+## kill -9
+
+What if I want to kill a process and don't want any guff about it?
+
+```
+$ kill -9 celeryd
+```
+
+Is 9 the number of times you need to kill a process to ensure it is dead?
+
+### Not quite.
+
+---
+
+## "kill" is a misnomer
+
+While it is the defacto way to kill a process, it's really just a program for
+sending signals. Here's the list:
+
+```
+$ kill -l
+1) SIGHUP    2) SIGINT      3) SIGQUIT    4) SIGILL	 
+5) SIGTRAP   6) SIGABRT     7) SIGBUS     8) SIGFPE	 
+9) SIGKILL   10) SIGUSR1    11) SIGSEGV  12) SIGUSR2	
+13) SIGPIPE  14) SIGALRM    15) SIGTERM  16) SIGSTKFLT	
+17) SIGCHLD  18) SIGCONT    19) SIGSTOP  20) SIGTSTP
+21) SIGTTIN  22) SIGTTOU    23) SIGURG   24) SIGXCPU	
+25) SIGXFSZ  26) SIGVTALRM  27) SIGPROF  28) SIGWINCH	
+29) SIGIO    30) SIGPWR     31) SIGSYS   34) SIGRTMIN	
+...
+```
+
+The default is -15, SIGTERM
+
+-9 is SIGKILL, which is a special signal that doesn't ask a process to shut
+itself down. The kernal shuts the process down (without any cleanup).
+
+---
+## Opinionated signals
+
+While KILL and TERMINATE have obvious results, other signals are used
+differently between software.
+
+For example, Apache users SIGUSR1 for graceful restarts, wheres Nginx and
+Gunicorn use SIGHUP.
+
+Neither of which Supervisor (our daemonizing software) knows how to do.
+
+```
+@task
+def gunicorn_restart():
+    sudo('/usr/bin/supervisorctl pid gunicorn | xargs kill -HUP')
+```
+
+---
+## Signals everywhere! Ctrl-C
+
+Everyone has used Ctrl-C to kill a process running in your session, but what is
+actually happening?
+
+```
+$ ./manage.py runserver
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+^C
+$
+```
+
+Ctrl-C is also sending a signal. In this case, SIGINT (interrupt). This is
+functionally the same as SIGTERM in most cases.
+
+Similarly, Ctrl-Z sends TSTP (tty/terminal stop) which puts your process in the
+background.
+
+---
+class: center
+# Demo time
+### @jwpeddle
+http://jwpeddle.github.com/signals-talk/
+    </textarea>
+    <div id="slideshow"></div>
+  </body>
+</html>
