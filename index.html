@@ -139,10 +139,10 @@ itself down. The kernal shuts the process down (without any cleanup).
 While KILL and TERMINATE have obvious results, other signals are used
 differently between software.
 
-For example, Apache users SIGUSR1 for graceful restarts, wheres Nginx and
+For example, Apache uses SIGUSR1 for graceful restarts, whereas Nginx and
 Gunicorn use SIGHUP.
 
-Neither of which Supervisor (our daemonizing software) knows how to do.
+###### Note: Neither of which Supervisor (our daemonizing software) knows how to do.
 
 ```
 @task
