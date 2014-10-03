@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="vmfarms">
   <head>
-    <title>POSIX Signals</title>
+    <title>Angular.js</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script src="https://github.com/downloads/gnab/remark/remark-0.4.2.min.js" type="text/javascript">
-      { "highlightStyle": "sunburst" }
-    </script>
-    <style type="text/css" media="screen">
-      @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+    <style type="text/css">
       @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
 
       body {
         font-family: 'Droid Serif';
-        font-size: 24px;
         color: #fff;
-      }
-      a {
-        color: #daa420
       }
       h1, h2 {
         font-family: 'Yanone Kaffeesatz';
@@ -33,149 +27,335 @@
         color: #fff;
         font-size: 1.5em;
       }
-      .slide {
+      a {
+        color: #daa420
+      }
+      label {
+          display: block;
+          margin: 0px 0px 5px;
+      }
+      label>span {
+          float: left;
+          width: 20%;
+          text-align: right;
+          padding-right: 10px;
+          margin-top: 10px;
+          color: #969696;
+      }
+      input[type="text"], textarea, select{
+          color: #555;
+          font-size: 30px;
+          padding: 3px 0px 3px 5px;
+          margin-top: 2px;
+          margin-right: 6px;
+          margin-bottom: 16px;
+          border: 1px solid #e5e5e5;
+          background: #fbfbfb;
+          height: 75px;
+          width: 80%;
+          outline: 0;
+          -webkit-box-shadow: inset 1px 1px 2px rgba(200,200,200,0.2);
+          box-shadow: inset 1px 1px 2px rgba(200,200,200,0.2);
+      }
+      input[type="submit"] {
+        font-size: 26px;
+        width: 100px;
+        height: 85px;
+      }
+      textarea{
+          height:100px;
+          padding: 5px 0px 0px 5px;
+          width: 70%;
+      }
+      .button {
+          -moz-box-shadow:inset 0px 1px 0px 0px #fbafe3;
+          -webkit-box-shadow:inset 0px 1px 0px 0px #fbafe3;
+          box-shadow:inset 0px 1px 0px 0px #fbafe3;
+          background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ff5bb0), color-stop(1, #ef027d) );
+          background:-moz-linear-gradient( center top, #ff5bb0 5%, #ef027d 100% );
+          filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bb0', endColorstr='#ef027d');
+          background-color:#ff5bb0;
+          border-radius:9px;
+          -webkit-border-radius:9px;
+          -moz-border-border-radius:9px;
+          border:1px solid #ee1eb5;
+          display:inline-block;
+          color:#ffffff;
+          font-family:Arial;
+          font-size:15px;
+          font-weight:bold;
+          font-style:normal;
+          height: 40px;
+          line-height: 30px;
+          width:100px;
+          text-decoration:none;
+          text-align:center;
+          text-shadow:1px 1px 0px #c70067;
+      }
+      .button:hover {
+          background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ef027d), color-stop(1, #ff5bb0) );
+          background:-moz-linear-gradient( center top, #ef027d 5%, #ff5bb0 100% );
+          filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ef027d', endColorstr='#ff5bb0');
+          background-color:#ef027d;
+      }
+      .button:active {
+          position:relative;
+          top:1px;
+      }
+      select {
+          background: url('down-arrow.png') no-repeat right, -moz-linear-gradient(top, #FBFBFB 0%, #E9E9E9 100%);
+          background: url('down-arrow.png') no-repeat right, -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FBFBFB), color-stop(100%,#E9E9E9));
+        appearance:none;
+          -webkit-appearance:none; 
+        -moz-appearance: none;
+          text-indent: 0.01px;
+          text-overflow: '';
+          width: 70%;
+          line-height: 15px;
+          height: 30px;
+      }
+      .remark-code, .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+        font-size: 20px;
+      }
+      .remark-code-line-highlighted {
+        background-color: #222;
+      }
+      .remark-slide-content {
         background: url(http://subtlepatterns.subtlepatterns.netdna-cdn.com/patterns/debut_dark.png);
+        font-size: 30px;
       }
-      .content {
-      }
-      
-      #slideshow .slide > .splash {
-        background: url(traffic-lights.jpg) no-repeat center;
+      .done-true {
+        text-decoration: line-through;
+        color: grey;
       }
     </style>
   </head>
   <body>
     <textarea id="source">
-class: splash
-# POSIX Signals
+
+class: center, middle
+
+![Angular JS](https://angularjs.org/img/AngularJS-large.png)
 
 ---
-## What are signals?
+##What is Angular?
+* (Yet another) frontend javascript MVC framework
 
-Signals are a way that processes can communicate requests to each other.
-Signals have been around since the 1970s Bell Labs Unix and are used in all
-POSIX operating systems (Linux, OSX, etc).
+* Extends HTML with custom attributes and tags
 
-When a signal is sent, the OS interrupts the process to deliver the
-signal. If the process has registered its own signal handler, that will run.
-Otherwise, a default signal handler is executed.
+* Two-way data binding
 
 ---
-## An example
-```
-$ apachectl stop
-
-$ /etc/init.d/apache stop
-
-$ systemctl stop apache.service
-
-$ supervisorctl stop apache
-
-$ kill httpd
-```
-
-All five of these commands do the exact same thing: shut down apache.
-
-Or more accurately, they tell apache to shut <em>itself</em> down.
+class: center, middle
+<h1>Hello {{yourName}}!</h1>
+<input type="text" ng-model="yourName" placeholder="Enter a name here">
 
 ---
-## SIGTERM
+class: middle, ng-non-bindable
+#Source
 
-All of these methods of shutting down apache ultimately did the exact same
-thing to the apache httpd process- they sent it a signal: SIGTERM.
+```html
+  <h1>Hello {{yourName}}!</h1>
 
-SIGTERM, standing for "terminate" is the standard way to tell a process to
-cleanup anything it's currently doing and shut itself down.
-
-Most processes will handle SIGTERM in this way. However, it is ultimately up to
-the process how to react.
-
+  <input type="text" ng-model="yourName">
 ```
-$ kill celeryd
-&gt; "HAHA NO I'M GOING TO KEEP RUNNING AND ALSO BREAK EVERYTHING"
-```
+
+##Where's the javascript?
+There isn't any.
 
 ---
-## kill -9
-
-What if I want to kill a process and don't want any guff about it?
-
-```
-$ kill -9 celeryd
-```
-
-Is 9 the number of times you need to kill a process to ensure it is dead?
-
-### Not quite.
-
----
-
-## "kill" is a misnomer
-
-While it is the defacto way to kill a process, it's really just a program for
-sending signals. Here's the list:
-
-```
-$ kill -l
-1) SIGHUP    2) SIGINT      3) SIGQUIT    4) SIGILL	 
-5) SIGTRAP   6) SIGABRT     7) SIGBUS     8) SIGFPE	 
-9) SIGKILL   10) SIGUSR1    11) SIGSEGV  12) SIGUSR2	
-13) SIGPIPE  14) SIGALRM    15) SIGTERM  16) SIGSTKFLT	
-17) SIGCHLD  18) SIGCONT    19) SIGSTOP  20) SIGTSTP
-21) SIGTTIN  22) SIGTTOU    23) SIGURG   24) SIGXCPU	
-25) SIGXFSZ  26) SIGVTALRM  27) SIGPROF  28) SIGWINCH	
-29) SIGIO    30) SIGPWR     31) SIGSYS   34) SIGRTMIN	
-...
-```
-
-The default is -15, SIGTERM
-
--9 is SIGKILL, which is a special signal that doesn't ask a process to shut
-itself down. The kernal shuts the process down (without any cleanup).
+class: middle
+#Checklist
+<div ng-controller="Checklist">
+  <span>{{remaining()}} of {{todos.length}} remaining</span>
+  [ <a href="" ng-click="archive()">archive</a> ]
+  <ul class="unstyled">
+    <li ng-repeat="todo in todos">
+      <input type="checkbox" ng-model="todo.done">
+      <span class="done-{{todo.done}}">{{todo.text}}</span>
+    </li>
+  </ul>
+  <form ng-submit="addTodo()">
+    <input type="text" ng-model="todoText"  size="30"
+            placeholder="Add item">
+    <input class="btn-primary" type="submit" value="add">
+  </form>
+</div>
 
 ---
-## Opinionated signals
+class: middle, ng-non-bindable
+#Javascript
 
-While KILL and TERMINATE have obvious results, other signals are used
-differently between software.
+```javascript
+$scope.todos = [
+  {text:'build micoma', done:true},
+  {text:'build micoma again', done:true},
+  {text:'build micoma again again', done:true},
+  {text:'hammock', done:false}];
 
-For example, Apache uses SIGUSR1 for graceful restarts, whereas Nginx and
-Gunicorn use SIGHUP.
-
-###### Note: Neither of which Supervisor (our daemonizing software) knows how to do.
-
+$scope.addTodo = function() {
+  $scope.todos.push({text:$scope.todoText, done:false});
+  $scope.todoText = '';
+};
 ```
-@task
-def gunicorn_restart():
-    sudo('/usr/bin/supervisorctl pid gunicorn | xargs kill -HUP')
+</script>
+
+---
+class: middle, ng-non-bindable
+#HTML
+
+```xml
+  <span>{{remaining()}} of {{todos.length}} remaining</span>
+  [ <a href="" ng-click="archive()">archive</a> ]
+
+  <ul class="unstyled">
+*    <li ng-repeat="todo in todos">
+      <input type="checkbox" ng-model="todo.done">
+      <span class="done-{{todo.done}}">{{todo.text}}</span>
+    </li>
+  </ul>
+
+*  <form ng-submit="addTodo()">
+    <input type="text" ng-model="todoText"  size="30"
+            placeholder="Add item">
+    <input class="btn-primary" type="submit" value="add">
+  </form>
 ```
 
 ---
-## Signals everywhere! Ctrl-C
+# REST API
 
-Everyone has used Ctrl-C to kill a process running in your session, but what is
-actually happening?
+```python
+class User(models.Model):
+    username = models.CharField()
 
-```
-$ ./manage.py runserver
-Development server is running at http://127.0.0.1:8000/
-Quit the server with CONTROL-C.
-^C
-$
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 ```
 
-Ctrl-C is also sending a signal. In this case, SIGINT (interrupt). This is
-functionally the same as SIGTERM in most cases.
+```javascript
+var User = $resource('/user/:username', {username:'@username'});
 
-Similarly, Ctrl-Z sends TSTP (tty/terminal stop) which puts your process in the
-background.
+var hany = User.get({username:'hanyfahim'}, function() {
+  hany.username = 'rebeccablack';
+  hany.$save();
+});
+```
 
 ---
-class: center
-# Demo time
-### @jwpeddle
-http://jwpeddle.github.com/signals-talk/
+class: center, middle
+
+#Custom HTML tags/attributes
+
+```xml
+<ninja>
+```
+
+---
+class: middle, ng-non-bindable
+
+#Source
+
+```javascript
+.directive('ninja', function() {
+  return {
+    link: function ($scope, element, attrs) {
+      $scope.currentNinja = 'jason';
+*      element.bind('click', function() {
+        $scope.$apply(function() {
+*          $scope.currentNinja = randomChoice([
+            'anarosa',
+            'hany',
+            'kris',
+            'cristian',
+            'larry'
+          ]);  
+        });
+      });
+    },
+*    template:
+      '<img ng-src="http://vmfarms.com/static/img/ninja-' 
+      + '{{currentNinja}}.png">'
+  };
+});
+```
+
+---
+class: center, middle
+<ninja>
+
+---
+class: center, middle
+<img src="http://vmfarms.com/static/img/bio/aman-avatar.png" style="height: 1100px; position: absolute; top: -200px; left: 70px;">
+
+
     </textarea>
-    <div id="slideshow"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-rc.4/angular.min.js" type="text/javascript"></script>
+    <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        highlightStyle: 'sunburst',
+        highlightLanguage: 'remark'
+      });
+    </script>
+    <script type="text/javascript">
+      angular.module('vmfarms', [])
+        .controller('Checklist', ['$scope', function($scope) {
+          $scope.todos = [
+            {text:'build micoma', done:true},
+            {text:'build micoma again', done:true},
+            {text:'build micoma again again', done:true},
+            {text:'hammock', done:false}];
+
+          $scope.addTodo = function() {
+            $scope.todos.push({text:$scope.todoText, done:false});
+            $scope.todoText = '';
+          };
+
+          $scope.remaining = function() {
+            var count = 0;
+            angular.forEach($scope.todos, function(todo) {
+              count += todo.done ? 0 : 1;
+            });
+            return count;
+          };
+
+          $scope.archive = function() {
+            var oldTodos = $scope.todos;
+            $scope.todos = [];
+            angular.forEach(oldTodos, function(todo) {
+              if (!todo.done) $scope.todos.push(todo);
+            });
+          };
+        }])
+
+        .directive('ninja', function() {
+          return {
+            restrict: 'E',
+            link: function ($scope, element, attrs) {
+              $scope.currentNinja = 'jason';
+              element.bind('click', function() {
+                $scope.$apply(function() {
+                  $scope.currentNinja = randomChoice([
+                    'anarosa',
+                    'hany',
+                    'kris',
+                    'aman',
+                    'cristian',
+                    'larry'
+                  ]);  
+                });
+              });
+            },
+            template: '<img ng-src="http://vmfarms.com/static/img/ninja-{{currentNinja}}.png">'
+          };
+        });
+
+        function randomChoice(arr) {
+          return arr[Math.floor(arr.length * Math.random())];
+        }
+    </script>
   </body>
 </html>
